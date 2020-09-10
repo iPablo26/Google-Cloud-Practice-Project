@@ -236,3 +236,64 @@ In this lab, you learn how to perform the following tasks:
 
     # Viewing Logs
     gcloud logging read 'resource.type=nat_gateway' --limit=10 --format=json
+
+
+# Third LAB: Creating Virtual Machines
+
+## Objectives: 
+
+In this lab, you learn how to perform the following tasks:
+
+    - Create several standard VMs
+
+    - Create advanced VMs
+
+## Steps:
+
+1. Create a utility virtual machine:
+
+    # Create a VM
+    gcloud compute instances create gads-instance --zone=us-central1-c --machine-type=n1-standard-1 --subnet=default --no-address 
+
+    # Explore the VM details
+    gcloud compute instances describe gads-instance
+
+    # Explore the VM logs
+    gcloud logging read "resource.type=gce_instance"
+
+
+2. Create a Windows virtual machine:
+
+    # Create a VM
+    gcloud compute instances create gads-windows --zone=europe-west2-a --machine-type=n1-standard-2 --subnet=default --no-address --tags=http-server,https-server --image=windows-server-2016-dc-core-v20200813 --image-project=windows-cloud --boot-disk-size=100GB --boot-disk-type=pd-ssd --boot-disk-device-name=gads-windows
+
+    gcloud compute firewall-rules create default-allow-http --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=http-server
+
+    gcloud compute firewall-rules create default-allow-https --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0 --target-tags=https-server
+
+    # Set the password for the VM
+    gcloud compute reset-windows-password gads-windows
+
+
+3. Create a custom virtual machine:
+
+    # Create a VM
+    gcloud compute instances create gads-custom --zone=us-west1-b --machine-type=custom-6-32768 --subnet=default --network-tier=PREMIUM 
+
+    # Connect via SSH to your custom VM
+    For the custom VM you just created, click SSH
+
+    # To see information about unused and used memory and swap space on your custom VM, run the following command:
+    free
+
+    # To see details about the RAM installed on your VM, run the following command:
+    sudo dmidecode -t 17
+
+    # To verify the number of processors, run the following command:
+    nproc
+
+    # To see details about the CPUs installed on your VM, run the following command:
+    lscpu
+
+    # To exit the SSH terminal, run the following command:
+    exit
